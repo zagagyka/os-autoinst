@@ -938,7 +938,8 @@ sub start_qemu ($self) {
                 die "unknown NICTYPE $vars->{NICTYPE}\n";
             }
             my $bootorder = $vars->{PXEBOOT} ? "bootindex=" . ($i + 1) : '';
-            sp('device', [qv "$vars->{NICMODEL} netdev=qanet$i mac=$nicmac[$i] $bootorder"]);
+            my $nicpciaddr = ($vars->{NICPCIADDR} && $vars->{NICTYPE} eq "user") ? "bus=pci.0 addr=0x" . sprintf("%x", $vars->{NICPCIADDR} + $i) : '';
+            sp('device', [qv "$vars->{NICMODEL} netdev=qanet$i mac=$nicmac[$i] $bootorder $nicpciaddr"]);
         }
 
         # Keep additional virtio _after_ Ethernet setup to keep virtio-net as eth0
